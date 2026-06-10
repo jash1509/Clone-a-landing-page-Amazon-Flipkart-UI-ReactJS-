@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Rounded Orange Shopping Bag background -->
+  <rect x="15" y="30" width="70" height="60" rx="12" fill="#ff9900" />
+  <!-- Handle -->
+  <path d="M35 30V22C35 13.7157 41.7157 7 50 7C58.2843 7 65 13.7157 65 22V30" stroke="#ff9900" stroke-width="8" stroke-linecap="round" />
+  <!-- White Vibe Bolt / V inside the bag -->
+  <path d="M40 45L50 62L60 45" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M45 73H55" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+</svg>
