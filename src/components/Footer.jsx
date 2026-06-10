@@ -57,17 +57,17 @@ export default function Footer() {
         <div>
           <h3 className="footer-column-title">Contact & Help</h3>
           <ul className="footer-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-              <MapPin size={14} color="var(--color-amber-light)" />
-              123 E-Commerce Blvd, Suite 400, NY 10001
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.8rem' }}>
+              <MapPin size={14} color="var(--color-amber-light)" style={{ marginTop: '3px', flexShrink: 0 }} />
+              ShopVibe India Pvt. Ltd., 4th Floor, Prestige Tech Park, Outer Ring Road, Bengaluru, Karnataka - 560103
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
               <Phone size={14} color="var(--color-amber-light)" />
-              +1 (800) 555-VIBE
+              1800-419-VIBE (Toll-Free)
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
               <Mail size={14} color="var(--color-amber-light)" />
-              support@shopvibe.com
+              support@shopvibe.in
             </li>
           </ul>
         </div>
