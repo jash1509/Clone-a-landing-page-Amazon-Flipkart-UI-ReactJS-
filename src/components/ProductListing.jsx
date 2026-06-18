@@ -1,4 +1,3 @@
-import React from 'react';
 import ProductCard from './ProductCard';
 import { products } from '../mockData';
 import { Search } from 'lucide-react';

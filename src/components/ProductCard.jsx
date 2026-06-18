@@ -1,4 +1,3 @@
-import React from 'react';
 import { Star, Heart, ShoppingCart } from 'lucide-react';
 
 export default function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }) {

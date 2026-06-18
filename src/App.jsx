@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import HeroCarousel from './components/HeroCarousel';
 import Categories from './components/Categories';
@@ -8,6 +8,7 @@ import FeaturedBrands from './components/FeaturedBrands';
 import CustomerReviews from './components/CustomerReviews';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
+import CartDrawer from './components/CartDrawer';
 import { Heart, ShoppingBag } from 'lucide-react';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [isCartOpen, setIsCartOpen] = useState(false);
   
   // Toast notifications state
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -39,6 +41,27 @@ export default function App() {
       return [...prevCart, { ...product, quantity: 1 }];
     });
     triggerToast(`"${product.name.slice(0, 30)}..." added to Cart!`, 'success');
+  };
+
+  const handleUpdateCartQuantity = (productId, nextQuantity) => {
+    setCart((prevCart) => {
+      if (nextQuantity <= 0) {
+        return prevCart.filter((item) => item.id !== productId);
+      }
+
+      return prevCart.map((item) => (
+        item.id === productId ? { ...item, quantity: nextQuantity } : item
+      ));
+    });
+  };
+
+  const handleRemoveFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+    triggerToast('Item removed from Cart', 'info');
+  };
+
+  const handlePlaceOrder = () => {
+    setCart([]);
   };
 
   // Toggle Wishlist handler
@@ -67,6 +90,7 @@ export default function App() {
         setSearchTerm={setSearchTerm}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
+        onOpenCart={() => setIsCartOpen(true)}
       />
 
       {/* Main Sections */}
@@ -106,6 +130,15 @@ export default function App() {
 
       {/* 9. Footer (Social links + directories + Back to Top) */}
       <Footer />
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        cart={cart}
+        onClose={() => setIsCartOpen(false)}
+        onUpdateQuantity={handleUpdateCartQuantity}
+        onRemove={handleRemoveFromCart}
+        onCheckout={handlePlaceOrder}
+      />
 
       {/* Custom Toast Feedback Alert */}
       {toast.visible && (

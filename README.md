@@ -1,115 +1,75 @@
-# ShopVibe - E-Commerce Landing Page Clone (Amazon / Flipkart UI)
+# ShopVibe
 
-ShopVibe is a premium, fully responsive, and highly interactive UI-only e-commerce landing page clone inspired by **Amazon** and **Flipkart**. It is built using **ReactJS** (bootstrapped with **Vite**) and styled using pure **Vanilla CSS** with a curated dark-navy, amber, and white design system.
+ShopVibe is a responsive React storefront inspired by familiar Indian e-commerce experiences. It uses a navy, amber, and white design system and includes product discovery, category filtering, cart management, deals, reviews, and newsletter interactions.
 
-The application has been fully localized for the Indian e-commerce market, incorporating Rupee pricing, Indian numbering system format, local brands, regional shipping tags, and custom testimonials.
+## Features
 
----
+- Live product search with a keyboard-accessible suggestion dropdown.
+- Department and category filters that update the product grid.
+- Functional cart drawer with an empty state, item quantities, remove actions, item count, and subtotal.
+- Product cards with pricing, discounts, ratings, wishlist controls, and add-to-cart actions.
+- Deal-of-the-day section with a countdown timer.
+- Auto-playing hero carousel with manual controls.
+- Responsive layouts for desktop, tablet, and mobile screens.
+- Toast feedback for cart and wishlist actions.
+- Newsletter form validation and smooth back-to-top navigation.
 
-## 🚀 Key Features
+## Search and cart behavior
 
-1. **Dynamic Search & Header Navigation**
-   - Interactive search input that filters product listings in real-time as the user types.
-   - Dynamic department filter selector.
-   - Dynamic Shopping Cart badge count that updates instantly as items are added.
-   - Static localization marker ("Deliver to India") and user profile dropdown tabs.
+Start typing a product name in the header search field to see matching suggestions from the selected department. Use the mouse or the arrow keys and Enter to choose a suggestion. Selecting a result filters the catalog and scrolls to that product.
 
-2. **Automated Hero Banner Carousel**
-   - Custom carousel slides showcasing electronics, fashion, and home categories.
-   - Auto-play rotation (changes slides every 5 seconds) paired with manual previous/next chevron controls and slider dot indicators.
+Select **Add to Cart** on any product or deal, then use the **Cart** button in the header to open the cart drawer. From there you can increase or decrease quantities, remove products, review the subtotal, or continue shopping. Selecting **Proceed to Checkout** confirms the demo order, clears the cart, and displays a success message. No real payment is processed.
 
-3. **Shop by Category Grid**
-   - Highlights Electronics, Fashion, Home & Kitchen, Beauty, Grocery, and Sports.
-   - Custom scale-up hover micro-animations.
-   - Clicking a category card dynamically filters the main product list below.
+## Tech stack
 
-4. **Deal of the Day (Live Countdown Timer)**
-   - Highlights limited-time offers with special discount tags (up to 77% OFF).
-   - Implements a dynamic ticking countdown timer that calculates hours, minutes, and seconds remaining until midnight and updates every second.
+- React 19
+- Vite 8
+- Vanilla CSS
+- Lucide React icons
 
-5. **Product Listing Grid**
-   - Dynamically renders 9 detailed product cards using `Array.map()`.
-   - Incorporates discount labels, original strikethrough prices, and custom split SVG star rating calculators (supporting half-stars).
-   - Interactive "Add to Cart" and "Wishlist" toggles on each card.
-   - Handled empty search results state with a helper "Clear Filters" button.
-
-6. **Interactive Toast Notifications**
-   - Sliding toast notifications that alert the user in the bottom-right corner when an item is added to the cart or toggled on the wishlist.
-
-7. **Newsletter Form Validation**
-   - Validates email address format in real-time using React state.
-   - Shows active hints for invalid entries and renders a success check banner on submission.
-
-8. **Footer**
-   - Detailed site directories and social links with hover micro-animations.
-   - Fully interactive "Back to Top" scrolling scroller that glides the viewport smoothly to the top.
-
----
-
-## 🛠️ Tech Stack
-
-- **Core**: ReactJS (Functional Components, Hooks like `useState` & `useEffect`)
-- **Build Tool**: Vite (Ultra-fast bundler)
-- **Styling**: Vanilla CSS (Custom properties, Flexbox, Grids, and transitions)
-- **Icons**: Lucide React (Clean, scalable SVGs)
-
----
-
-## 📁 File Structure
+## Project structure
 
 ```text
-2/
+.
 ├── public/
-│   ├── favicon.svg        # Custom branded ShopVibe favicon
-│   └── icons.svg
 ├── src/
 │   ├── components/
-│   │   ├── Header.jsx          # Search, cart badge, department selectors
-│   │   ├── HeroCarousel.jsx    # Automatic/manual promotion slides
-│   │   ├── Categories.jsx      # Dynamic category filter cards
-│   │   ├── DealOfDay.jsx       # Deals grid and ticking midnight timer
-│   │   ├── ProductListing.jsx  # Main grid layout & filter controller
-│   │   ├── ProductCard.jsx     # Ratings stars, wishlist, cart button
-│   │   ├── FeaturedBrands.jsx  # Partner logos with scaling effects
-│   │   ├── CustomerReviews.jsx # Reviews with verified checkmarks
-│   │   ├── Newsletter.jsx      # Input validation & success feedback
-│   │   └── Footer.jsx          # Directory links and back-to-top handler
-│   ├── App.jsx            # Orchestrates global state & layout assemblies
-│   ├── index.css          # Core design tokens, layout styles, and animations
-│   ├── main.jsx           # Mounts the React app
-│   └── mockData.js        # Indian products, reviews, slide banners, and brands
-├── index.html             # descriptive titles and SEO meta descriptions
+│   │   ├── CartDrawer.jsx
+│   │   ├── Categories.jsx
+│   │   ├── CustomerReviews.jsx
+│   │   ├── DealOfDay.jsx
+│   │   ├── FeaturedBrands.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── HeroCarousel.jsx
+│   │   ├── Newsletter.jsx
+│   │   ├── ProductCard.jsx
+│   │   └── ProductListing.jsx
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   └── mockData.js
+├── index.html
 ├── package.json
 └── vite.config.js
 ```
 
----
+## Getting started
 
-## 💻 Getting Started
+Requirements: a current Node.js LTS release and npm.
 
-### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
-
-### Installation
-1. Clone the repository or navigate to the project directory:
-   ```bash
-   cd Clone-a-landing-page-Amazon-Flipkart-UI-ReactJS-
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-### Running the Application
-To run the local development server:
 ```bash
+npm install
 npm run dev
 ```
-Open [http://localhost:5173](http://localhost:5173) in your browser to view the page.
 
-### Building for Production
-To bundle the application for production deployment:
+Open [http://localhost:5173](http://localhost:5173) in your browser. Vite may choose the next available port if 5173 is already in use.
+
+## Quality checks
+
 ```bash
+npm run lint
 npm run build
 ```
-The compiled files will be created in the `dist/` directory.
+
+The production build is written to `dist/`.

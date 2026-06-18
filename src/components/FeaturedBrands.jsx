@@ -1,4 +1,3 @@
-import React from 'react';
 import { featuredBrands } from '../mockData';
 
 export default function FeaturedBrands() {

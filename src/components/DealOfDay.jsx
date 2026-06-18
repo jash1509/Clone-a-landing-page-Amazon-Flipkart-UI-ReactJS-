@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, ShoppingBag } from 'lucide-react';
 import { dealsOfTheDay } from '../mockData';
 

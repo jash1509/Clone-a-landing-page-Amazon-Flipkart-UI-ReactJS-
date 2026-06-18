@@ -1,117 +1,211 @@
-import React from 'react';
-import { Search, ShoppingCart, User, MapPin, Menu, ChevronDown } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Search, ShoppingCart, MapPin, Menu, ChevronDown } from 'lucide-react';
+import { products } from '../mockData';
 
-export default function Header({ cartCount, searchTerm, setSearchTerm, activeCategory, setActiveCategory }) {
+const MAX_SUGGESTIONS = 5;
+
+export default function Header({
+  cartCount,
+  searchTerm,
+  setSearchTerm,
+  activeCategory,
+  setActiveCategory,
+  onOpenCart,
+}) {
+  const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const suggestions = useMemo(() => {
+    if (!normalizedSearch) return [];
+
+    return products
+      .filter((product) => (
+        product.name.toLowerCase().includes(normalizedSearch)
+        && (activeCategory === 'all' || product.category === activeCategory)
+      ))
+      .slice(0, MAX_SUGGESTIONS);
+  }, [activeCategory, normalizedSearch]);
+
+  const showSuggestions = isSuggestionOpen && normalizedSearch.length > 0;
+
+  const scrollToProducts = () => {
+    document.querySelector('.products-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const selectSuggestion = (product) => {
+    setSearchTerm(product.name);
+    setActiveCategory(product.category);
+    setIsSuggestionOpen(false);
+    setActiveSuggestion(-1);
+    requestAnimationFrame(scrollToProducts);
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+      selectSuggestion(suggestions[activeSuggestion]);
+      return;
+    }
+
+    setIsSuggestionOpen(false);
+    scrollToProducts();
+  };
+
+  const handleSearchKeyDown = (event) => {
+    if (!showSuggestions || suggestions.length === 0) {
+      if (event.key === 'Escape') setIsSuggestionOpen(false);
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveSuggestion((current) => (current + 1) % suggestions.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveSuggestion((current) => (current <= 0 ? suggestions.length - 1 : current - 1));
+    } else if (event.key === 'Escape') {
+      setIsSuggestionOpen(false);
+      setActiveSuggestion(-1);
+    }
+  };
+
   return (
     <header className="header">
-      {/* Main Bar */}
       <div className="header-main">
-        {/* Logo */}
-        <div className="header-logo" onClick={() => { setSearchTerm(''); setActiveCategory('all'); }}>
+        <button
+          type="button"
+          className="header-logo"
+          onClick={() => { setSearchTerm(''); setActiveCategory('all'); }}
+          aria-label="ShopVibe home"
+        >
           Shop<span>Vibe</span>
-        </div>
+        </button>
 
-        {/* Delivery Location (Static/Decorative for Amazon feel) */}
         <div className="header-action-item hide-mobile">
           <span className="line-1">Deliver to</span>
-          <span className="line-2">
-            <MapPin size={14} /> India
-          </span>
+          <span className="line-2"><MapPin size={14} /> India</span>
         </div>
 
-        {/* Search Bar */}
-        <div className="header-search-container">
-          <select 
-            className="header-search-select"
-            value={activeCategory}
-            onChange={(e) => setActiveCategory(e.target.value)}
-          >
-            <option value="all">All Departments</option>
-            <option value="electronics">Electronics</option>
-            <option value="fashion">Fashion</option>
-            <option value="home">Home & Kitchen</option>
-            <option value="beauty">Beauty</option>
-            <option value="grocery">Grocery</option>
-            <option value="sports">Sports</option>
-          </select>
-          <input
-            type="text"
-            className="header-search-input"
-            placeholder="Search ShopVibe..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="header-search-button">
-            <Search size={20} color="#0f1111" />
-          </button>
+        <div
+          className="header-search-wrapper"
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setIsSuggestionOpen(false);
+              setActiveSuggestion(-1);
+            }
+          }}
+        >
+          <form className="header-search-container" role="search" onSubmit={handleSearchSubmit}>
+            <label className="sr-only" htmlFor="department-select">Search department</label>
+            <select
+              id="department-select"
+              className="header-search-select"
+              value={activeCategory}
+              onChange={(event) => {
+                setActiveCategory(event.target.value);
+                setActiveSuggestion(-1);
+              }}
+            >
+              <option value="all">All Departments</option>
+              <option value="electronics">Electronics</option>
+              <option value="fashion">Fashion</option>
+              <option value="home">Home & Kitchen</option>
+              <option value="beauty">Beauty</option>
+              <option value="grocery">Grocery</option>
+              <option value="sports">Sports</option>
+            </select>
+            <label className="sr-only" htmlFor="shop-search">Search products</label>
+            <input
+              id="shop-search"
+              type="search"
+              className="header-search-input"
+              placeholder="Search ShopVibe..."
+              value={searchTerm}
+              onFocus={() => setIsSuggestionOpen(true)}
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                setIsSuggestionOpen(true);
+                setActiveSuggestion(-1);
+              }}
+              onKeyDown={handleSearchKeyDown}
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={showSuggestions}
+              aria-controls="search-suggestions"
+              aria-activedescendant={activeSuggestion >= 0 ? `search-suggestion-${suggestions[activeSuggestion]?.id}` : undefined}
+            />
+            <button type="submit" className="header-search-button" aria-label="Search products">
+              <Search size={20} color="#0f1111" />
+            </button>
+          </form>
+
+          {showSuggestions && (
+            <div className="search-suggestions-panel" data-testid="search-suggestions">
+              {suggestions.length > 0 ? (
+                <ul id="search-suggestions" role="listbox" aria-label="Product suggestions">
+                  {suggestions.map((product, index) => (
+                    <li
+                      id={`search-suggestion-${product.id}`}
+                      role="option"
+                      aria-selected={index === activeSuggestion}
+                      className={index === activeSuggestion ? 'active' : ''}
+                      key={product.id}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => selectSuggestion(product)}
+                        onMouseEnter={() => setActiveSuggestion(index)}
+                      >
+                        <img src={product.image} alt="" />
+                        <span className="search-suggestion-copy">
+                          <strong>{product.name}</strong>
+                          <span>{product.category} · ₹{product.price.toLocaleString('en-IN')}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="search-no-suggestions">No matching products found.</div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Action Controls */}
         <div className="header-actions">
-          {/* Account/Profile */}
           <div className="header-action-item">
             <span className="line-1">Hello, Sign in</span>
-            <span className="line-2">
-              Account & Lists <ChevronDown size={12} />
-            </span>
+            <span className="line-2">Account & Lists <ChevronDown size={12} /></span>
           </div>
 
-          {/* Orders */}
           <div className="header-action-item hide-tablet">
             <span className="line-1">Returns</span>
             <span className="line-2">& Orders</span>
           </div>
 
-          {/* Cart Icon */}
-          <div className="header-action-item header-cart">
-            <span className="header-cart-badge">{cartCount}</span>
+          <button
+            type="button"
+            className="header-action-item header-cart"
+            onClick={onOpenCart}
+            aria-label={`Open cart with ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
+            data-testid="cart-trigger"
+          >
+            <span className="header-cart-badge" aria-hidden="true">{cartCount}</span>
             <ShoppingCart size={24} />
             <span className="line-2 hide-mobile">Cart</span>
-          </div>
+          </button>
         </div>
       </div>
 
-      {/* Sub-navigation Links */}
       <div className="header-subnav">
-        <div className="subnav-link bold">
-          <Menu size={16} /> All
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'electronics' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('electronics')}
-        >
-          Electronics
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'fashion' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('fashion')}
-        >
-          Fashion
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'home' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('home')}
-        >
-          Home & Kitchen
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'grocery' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('grocery')}
-        >
-          Grocery
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'beauty' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('beauty')}
-        >
-          Beauty
-        </div>
-        <div 
-          className={`subnav-link ${activeCategory === 'sports' ? 'bold' : ''}`}
-          onClick={() => setActiveCategory('sports')}
-        >
-          Sports
-        </div>
+        <div className="subnav-link bold"><Menu size={16} /> All</div>
+        <div className={`subnav-link ${activeCategory === 'electronics' ? 'bold' : ''}`} onClick={() => setActiveCategory('electronics')}>Electronics</div>
+        <div className={`subnav-link ${activeCategory === 'fashion' ? 'bold' : ''}`} onClick={() => setActiveCategory('fashion')}>Fashion</div>
+        <div className={`subnav-link ${activeCategory === 'home' ? 'bold' : ''}`} onClick={() => setActiveCategory('home')}>Home & Kitchen</div>
+        <div className={`subnav-link ${activeCategory === 'grocery' ? 'bold' : ''}`} onClick={() => setActiveCategory('grocery')}>Grocery</div>
+        <div className={`subnav-link ${activeCategory === 'beauty' ? 'bold' : ''}`} onClick={() => setActiveCategory('beauty')}>Beauty</div>
+        <div className={`subnav-link ${activeCategory === 'sports' ? 'bold' : ''}`} onClick={() => setActiveCategory('sports')}>Sports</div>
         <div className="subnav-link hide-mobile">Today's Deals</div>
         <div className="subnav-link hide-mobile">Customer Service</div>
         <div className="subnav-link hide-mobile">Registry</div>
