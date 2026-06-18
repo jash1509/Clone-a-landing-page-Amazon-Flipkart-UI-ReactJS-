@@ -16,7 +16,7 @@ ShopVibe is a responsive React storefront inspired by familiar Indian e-commerce
 
 ## Search and cart behavior
 
-Start typing a product name in the header search field to see matching suggestions from the selected department. Use the mouse or the arrow keys and Enter to choose a suggestion. Selecting a result filters the catalog and scrolls to that product.
+Start typing a product name in the header search field to see matching suggestions from the selected department. Use the mouse or the arrow keys and Enter to choose a suggestion. Selecting a result filters the catalog and scrolls to that product. Clearing the search field also resets the department to **All Departments** so the complete catalog returns.
 
 Select **Add to Cart** on any product or deal, then use the **Cart** button in the header to open the cart drawer. From there you can increase or decrease quantities, remove products, review the subtotal, or continue shopping. Selecting **Proceed to Checkout** confirms the demo order, clears the cart, and displays a success message. No real payment is processed.
 

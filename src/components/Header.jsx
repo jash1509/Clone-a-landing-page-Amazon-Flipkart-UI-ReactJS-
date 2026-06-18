@@ -124,7 +124,9 @@ export default function Header({
               value={searchTerm}
               onFocus={() => setIsSuggestionOpen(true)}
               onChange={(event) => {
-                setSearchTerm(event.target.value);
+                const nextSearchTerm = event.target.value;
+                setSearchTerm(nextSearchTerm);
+                if (nextSearchTerm === '') setActiveCategory('all');
                 setIsSuggestionOpen(true);
                 setActiveSuggestion(-1);
               }}
