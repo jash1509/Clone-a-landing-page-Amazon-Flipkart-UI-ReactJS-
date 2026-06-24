@@ -4,21 +4,18 @@ ShopVibe is a responsive React storefront inspired by familiar Indian e-commerce
 
 ## Features
 
-- Live product search with a keyboard-accessible suggestion dropdown.
-- Department and category filters that update the product grid.
-- Functional cart drawer with an empty state, item quantities, remove actions, item count, and subtotal.
-- Product cards with pricing, discounts, ratings, wishlist controls, and add-to-cart actions.
-- Deal-of-the-day section with a countdown timer.
-- Auto-playing hero carousel with manual controls.
-- Responsive layouts for desktop, tablet, and mobile screens.
-- Toast feedback for cart and wishlist actions.
-- Newsletter form validation and smooth back-to-top navigation.
-
-## Search and cart behavior
-
-Start typing a product name in the header search field to see matching suggestions from the selected department. Use the mouse or the arrow keys and Enter to choose a suggestion. Selecting a result filters the catalog and scrolls to that product. Clearing the search field also resets the department to **All Departments** so the complete catalog returns.
-
-Select **Add to Cart** on any product or deal, then use the **Cart** button in the header to open the cart drawer. From there you can increase or decrease quantities, remove products, review the subtotal, or continue shopping. Selecting **Proceed to Checkout** confirms the demo order, clears the cart, and displays a success message. No real payment is processed.
+- **Interactive User Authentication**: A pop-up login/register [AuthModal](src/components/AuthModal.jsx) with input validation and a **One-Click Demo User (Jash Barot)** preset to test prime features.
+- **Header Account Dropdown**: Tapping on the Account button displays an interactive lists overlay showing links to Orders, Wishlists, Account settings, or Sign Out.
+- **Detailed Account Settings Dialog**: The tabbed [AccountModal](src/components/AccountModal.jsx) manages:
+  - **My Profile**: Name, Email, Mobile number, Prime Membership Status toggle, and default delivery address.
+  - **Your Orders**: Interactive list of past orders showing item lists, purchase dates, status badges, and "Buy it again" options.
+  - **Wishlist**: Displays currently favorited items with options to quickly add to cart or remove.
+- **Product Details Modal**: Clicking on any product image or title opens [ProductDetailModal](src/components/ProductDetailModal.jsx) showing dynamic technical specifications, pricing discount calculations, shipping badges, quantity selectors, and direct cart actions.
+- **Focused Listing Layout**: Banners, Deals of the Day, Brands, and Customer Reviews hide automatically when a search query is active or a category is selected (e.g. clicking the **Electronics** subnav link), showing the filtered product catalog right at the top.
+- **All Department Navigation**: The subnav **All** category link clears active searches and department filters, restoring the full homepage layout instantly.
+- **State Persistence**: Cart, Wishlist, User settings, and Order histories are persisted across page reloads using browser `localStorage`.
+- **Toast Notifications**: Interactive toast alerts for cart and wishlist status changes.
+- **Responsive Layout**: Designed for all device screens (Mobile, Tablet, and Desktop).
 
 ## Tech stack
 
@@ -34,8 +31,9 @@ Select **Add to Cart** on any product or deal, then use the **Cart** button in t
 ├── public/
 ├── src/
 │   ├── components/
+│   │   ├── AccountModal.jsx
+│   │   ├── AuthModal.jsx
 │   │   ├── CartDrawer.jsx
-│   │   ├── Categories.jsx
 │   │   ├── CustomerReviews.jsx
 │   │   ├── DealOfDay.jsx
 │   │   ├── FeaturedBrands.jsx
@@ -44,6 +42,7 @@ Select **Add to Cart** on any product or deal, then use the **Cart** button in t
 │   │   ├── HeroCarousel.jsx
 │   │   ├── Newsletter.jsx
 │   │   ├── ProductCard.jsx
+│   │   ├── ProductDetailModal.jsx
 │   │   └── ProductListing.jsx
 │   ├── App.jsx
 │   ├── index.css

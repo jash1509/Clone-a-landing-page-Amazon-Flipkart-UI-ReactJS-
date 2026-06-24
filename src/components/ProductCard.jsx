@@ -1,6 +1,6 @@
 import { Star, Heart, ShoppingCart } from 'lucide-react';
 
-export default function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }) {
+export default function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onOpenDetail }) {
   const { id, name, price, originalPrice, discount, rating, reviewsCount, category, image, isBestSeller } = product;
 
   // Star renderer that handles half stars
@@ -52,14 +52,14 @@ export default function ProductCard({ product, onAddToCart, onToggleWishlist, is
       </button>
 
       {/* Image Container */}
-      <div className="product-img-container">
+      <div className="product-img-container" onClick={() => onOpenDetail(product)}>
         <img src={image} alt={name} className="product-img" loading="lazy" />
       </div>
 
       {/* Product Details */}
       <div className="product-info">
         <span className="product-category-tag">{category}</span>
-        <h3 className="product-name" title={name}>{name}</h3>
+        <h3 className="product-name" title={name} onClick={() => onOpenDetail(product)} style={{ cursor: 'pointer' }}>{name}</h3>
         
         {/* Rating Row */}
         <div className="product-rating">

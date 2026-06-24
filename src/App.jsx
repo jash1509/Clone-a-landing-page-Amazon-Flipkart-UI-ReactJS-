@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import HeroCarousel from './components/HeroCarousel';
-import Categories from './components/Categories';
 import DealOfDay from './components/DealOfDay';
 import ProductListing from './components/ProductListing';
 import FeaturedBrands from './components/FeaturedBrands';
@@ -9,15 +8,98 @@ import CustomerReviews from './components/CustomerReviews';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
+import AuthModal from './components/AuthModal';
+import AccountModal from './components/AccountModal';
+import ProductDetailModal from './components/ProductDetailModal';
 import { Heart, ShoppingBag } from 'lucide-react';
 
 export default function App() {
   // Global states
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_wishlist');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // User & Orders States
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [orders, setOrders] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_orders');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Modal Visibility States
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [activeAccountTab, setActiveAccountTab] = useState('profile');
+
+  // Persistence Effects
+  useEffect(() => {
+    localStorage.setItem('shopvibe_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('shopvibe_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  useEffect(() => {
+    localStorage.setItem('shopvibe_orders', JSON.stringify(orders));
+  }, [orders]);
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem('shopvibe_user', JSON.stringify(user));
+  };
+
+  const handleSignOut = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('shopvibe_user');
+    triggerToast('Signed out successfully.', 'info');
+  };
+
+  const handleUpdateUser = (updatedUser) => {
+    setCurrentUser(updatedUser);
+    localStorage.setItem('shopvibe_user', JSON.stringify(updatedUser));
+  };
+
+  const handleOpenAccount = (tab) => {
+    setActiveAccountTab(tab);
+    setIsAccountOpen(true);
+  };
+
+  // Product Detail Modal States
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const handleOpenDetail = (product) => {
+    setSelectedProduct(product);
+    setIsDetailOpen(true);
+  };
   
   // Toast notifications state
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -61,7 +143,25 @@ export default function App() {
   };
 
   const handlePlaceOrder = () => {
+    if (cart.length === 0) return;
+
+    const newOrder = {
+      id: 'OD' + Math.floor(1000000000 + Math.random() * 9000000000),
+      date: new Date().toISOString(),
+      status: 'Delivered',
+      items: [...cart],
+      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    };
+
+    setOrders((prevOrders) => [newOrder, ...prevOrders]);
     setCart([]);
+    setIsCartOpen(false);
+    triggerToast('Order placed successfully! 📦', 'success');
+
+    // Open orders tab after a small delay to show the new order
+    setTimeout(() => {
+      handleOpenAccount('orders');
+    }, 800);
   };
 
   // Toggle Wishlist handler
@@ -81,6 +181,8 @@ export default function App() {
   // Total cart item quantity count
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const showHomeContent = activeCategory === 'all' && searchTerm.trim() === '';
+
   return (
     <div className="app-container">
       {/* 1. Header (Dynamic search + cart count badge) */}
@@ -91,21 +193,19 @@ export default function App() {
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
         onOpenCart={() => setIsCartOpen(true)}
+        currentUser={currentUser}
+        onSignOut={handleSignOut}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAccount={handleOpenAccount}
       />
 
       {/* Main Sections */}
       <main className="main-content">
         {/* 2. Hero Carousel / Promotion banner */}
-        <HeroCarousel />
-
-        {/* 3. Categories section with hover animations */}
-        <Categories 
-          activeCategory={activeCategory} 
-          setActiveCategory={setActiveCategory} 
-        />
+        {showHomeContent && <HeroCarousel />}
 
         {/* 5. Deal of the Day (Ticking Countdown Timer) */}
-        <DealOfDay onAddToCart={handleAddToCart} />
+        {showHomeContent && <DealOfDay onAddToCart={handleAddToCart} onOpenDetail={handleOpenDetail} />}
 
         {/* 4. Product Listing Grid (Minimum 6 products + filtering search/categories) */}
         <ProductListing 
@@ -116,16 +216,17 @@ export default function App() {
           onAddToCart={handleAddToCart}
           onToggleWishlist={handleToggleWishlist}
           wishlist={wishlist}
+          onOpenDetail={handleOpenDetail}
         />
 
         {/* 6. Featured Brands section */}
-        <FeaturedBrands />
+        {showHomeContent && <FeaturedBrands />}
 
         {/* 7. Customer Reviews section */}
-        <CustomerReviews />
+        {showHomeContent && <CustomerReviews />}
 
         {/* 8. Newsletter Subscription (State-driven form + success feedback) */}
-        <Newsletter />
+        {showHomeContent && <Newsletter />}
       </main>
 
       {/* 9. Footer (Social links + directories + Back to Top) */}
@@ -138,6 +239,37 @@ export default function App() {
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemove={handleRemoveFromCart}
         onCheckout={handlePlaceOrder}
+      />
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onLogin={handleLogin}
+        triggerToast={triggerToast}
+      />
+
+      <AccountModal
+        key={currentUser ? `${currentUser.email}_${isAccountOpen}_${activeAccountTab}` : `guest_${isAccountOpen}_${activeAccountTab}`}
+        isOpen={isAccountOpen}
+        onClose={() => setIsAccountOpen(false)}
+        currentUser={currentUser}
+        onUpdateUser={handleUpdateUser}
+        orders={orders}
+        wishlist={wishlist}
+        onToggleWishlist={handleToggleWishlist}
+        onAddToCart={handleAddToCart}
+        initialTab={activeAccountTab}
+        triggerToast={triggerToast}
+      />
+
+      <ProductDetailModal
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        product={selectedProduct}
+        onAddToCart={handleAddToCart}
+        onToggleWishlist={handleToggleWishlist}
+        isWishlisted={selectedProduct ? wishlist.includes(selectedProduct.id) : false}
+        triggerToast={triggerToast}
       />
 
       {/* Custom Toast Feedback Alert */}

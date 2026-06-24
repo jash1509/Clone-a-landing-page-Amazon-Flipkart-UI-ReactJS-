@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Search, ShoppingCart, MapPin, Menu, ChevronDown } from 'lucide-react';
 import { products } from '../mockData';
 
@@ -11,8 +11,24 @@ export default function Header({
   activeCategory,
   setActiveCategory,
   onOpenCart,
+  currentUser,
+  onSignOut,
+  onOpenAuth,
+  onOpenAccount
 }) {
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest('.header-account-trigger')) {
+        setIsDropdownOpen(false);
+      }
+    };
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, [isDropdownOpen]);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -176,12 +192,92 @@ export default function Header({
         </div>
 
         <div className="header-actions">
-          <div className="header-action-item">
-            <span className="line-1">Hello, Sign in</span>
-            <span className="line-2">Account & Lists <ChevronDown size={12} /></span>
+          <div 
+            className="header-action-item header-account-trigger"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onMouseEnter={() => setIsDropdownOpen(true)}
+            style={{ position: 'relative', cursor: 'pointer' }}
+          >
+            <span className="line-1">
+              {currentUser ? `Hello, ${currentUser.name.split(' ')[0]}` : 'Hello, Sign in'}
+            </span>
+            <span className="line-2">
+              Account & Lists <ChevronDown size={12} />
+            </span>
+
+            {isDropdownOpen && (
+              <div 
+                className="header-account-dropdown"
+                onClick={(e) => e.stopPropagation()}
+                onMouseLeave={() => setIsDropdownOpen(false)}
+              >
+                {!currentUser ? (
+                  <div className="dropdown-auth-prompt">
+                    <button 
+                      type="button" 
+                      className="dropdown-signin-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsDropdownOpen(false);
+                        onOpenAuth();
+                      }}
+                    >
+                      Sign in
+                    </button>
+                    <p className="dropdown-signup-text">
+                      New customer? <span onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(false); onOpenAuth(); }}>Start here.</span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="dropdown-auth-prompt">
+                    <span className="dropdown-user-welcome">
+                      Welcome, <strong>{currentUser.name}</strong>
+                      {currentUser.isPrime && <span className="prime-mini-badge">Prime</span>}
+                    </span>
+                  </div>
+                )}
+                
+                <div className="dropdown-columns">
+                  <div className="dropdown-column">
+                    <h3>Your Lists</h3>
+                    <ul>
+                      <li onClick={() => { setIsDropdownOpen(false); onOpenAccount('wishlist'); }}>
+                        Your Wishlist
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="dropdown-column border-left">
+                    <h3>Your Account</h3>
+                    <ul>
+                      <li onClick={() => { setIsDropdownOpen(false); onOpenAccount('profile'); }}>
+                        Your Account
+                      </li>
+                      <li onClick={() => { setIsDropdownOpen(false); onOpenAccount('orders'); }}>
+                        Your Orders
+                      </li>
+                      {currentUser && (
+                        <li 
+                          className="dropdown-signout-link"
+                          onClick={() => {
+                            setIsDropdownOpen(false);
+                            onSignOut();
+                          }}
+                        >
+                          Sign Out
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="header-action-item hide-tablet">
+          <div 
+            className="header-action-item hide-tablet"
+            onClick={() => onOpenAccount('orders')}
+            style={{ cursor: 'pointer' }}
+          >
             <span className="line-1">Returns</span>
             <span className="line-2">& Orders</span>
           </div>
@@ -201,7 +297,7 @@ export default function Header({
       </div>
 
       <div className="header-subnav">
-        <div className="subnav-link bold"><Menu size={16} /> All</div>
+        <div className="subnav-link bold" onClick={() => { setActiveCategory('all'); setSearchTerm(''); }} style={{ cursor: 'pointer' }}><Menu size={16} /> All</div>
         <div className={`subnav-link ${activeCategory === 'electronics' ? 'bold' : ''}`} onClick={() => setActiveCategory('electronics')}>Electronics</div>
         <div className={`subnav-link ${activeCategory === 'fashion' ? 'bold' : ''}`} onClick={() => setActiveCategory('fashion')}>Fashion</div>
         <div className={`subnav-link ${activeCategory === 'home' ? 'bold' : ''}`} onClick={() => setActiveCategory('home')}>Home & Kitchen</div>

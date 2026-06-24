@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Clock, ShoppingBag } from 'lucide-react';
 import { dealsOfTheDay } from '../mockData';
 
-export default function DealOfDay({ onAddToCart }) {
+export default function DealOfDay({ onAddToCart, onOpenDetail }) {
   // Helper to calculate seconds remaining until the end of the day
   const getSecondsUntilEndOfDay = () => {
     const now = new Date();
@@ -62,12 +62,12 @@ export default function DealOfDay({ onAddToCart }) {
       <div className="deal-grid">
         {dealsOfTheDay.map((deal) => (
           <div className="deal-card" key={deal.id}>
-            <div className="deal-img-wrapper">
+            <div className="deal-img-wrapper" onClick={() => onOpenDetail(deal)} style={{ cursor: 'pointer' }}>
               <img src={deal.image} alt={deal.name} className="deal-img" />
             </div>
             <div className="deal-content">
               <div>
-                <h3 className="deal-prod-title" title={deal.name}>{deal.name}</h3>
+                <h3 className="deal-prod-title" title={deal.name} onClick={() => onOpenDetail(deal)} style={{ cursor: 'pointer' }}>{deal.name}</h3>
                 <span className="deal-offer-badge">{deal.offerText}</span>
               </div>
               <div className="deal-price-line" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

@@ -2,7 +2,7 @@ import ProductCard from './ProductCard';
 import { products } from '../mockData';
 import { Search } from 'lucide-react';
 
-export default function ProductListing({ searchTerm, setSearchTerm, activeCategory, setActiveCategory, onAddToCart, onToggleWishlist, wishlist }) {
+export default function ProductListing({ searchTerm, setSearchTerm, activeCategory, setActiveCategory, onAddToCart, onToggleWishlist, wishlist, onOpenDetail }) {
   // Filter products by search term and selected category
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -35,6 +35,7 @@ export default function ProductListing({ searchTerm, setSearchTerm, activeCatego
               onAddToCart={onAddToCart}
               onToggleWishlist={onToggleWishlist}
               isWishlisted={wishlist.includes(product.id)}
+              onOpenDetail={onOpenDetail}
             />
           ))}
         </div>
