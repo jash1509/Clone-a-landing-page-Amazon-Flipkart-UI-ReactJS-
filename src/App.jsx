@@ -11,10 +11,33 @@ import CartDrawer from './components/CartDrawer';
 import AuthModal from './components/AuthModal';
 import AccountModal from './components/AccountModal';
 import ProductDetailModal from './components/ProductDetailModal';
+import CustomerServiceModal from './components/CustomerServiceModal';
+import RegistryModal from './components/RegistryModal';
+import GiftCardsModal from './components/GiftCardsModal';
+import SellModal from './components/SellModal';
+import { products } from './mockData';
 import { Heart, ShoppingBag } from 'lucide-react';
 
 export default function App() {
   // Global states
+  const [productList, setProductList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_products');
+      return saved ? JSON.parse(saved) : products;
+    } catch {
+      return products;
+    }
+  });
+
+  const [walletBalance, setWalletBalance] = useState(() => {
+    try {
+      const saved = localStorage.getItem('shopvibe_wallet_balance');
+      return saved ? Number(saved) : 0;
+    } catch {
+      return 0;
+    }
+  });
+
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem('shopvibe_cart');
@@ -58,6 +81,11 @@ export default function App() {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [activeAccountTab, setActiveAccountTab] = useState('profile');
 
+  const [isCustomerServiceOpen, setIsCustomerServiceOpen] = useState(false);
+  const [isRegistryOpen, setIsRegistryOpen] = useState(false);
+  const [isGiftCardsOpen, setIsGiftCardsOpen] = useState(false);
+  const [isSellOpen, setIsSellOpen] = useState(false);
+
   // Persistence Effects
   useEffect(() => {
     localStorage.setItem('shopvibe_cart', JSON.stringify(cart));
@@ -70,6 +98,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('shopvibe_orders', JSON.stringify(orders));
   }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem('shopvibe_products', JSON.stringify(productList));
+  }, [productList]);
+
+  useEffect(() => {
+    localStorage.setItem('shopvibe_wallet_balance', walletBalance.toString());
+  }, [walletBalance]);
 
   const handleLogin = (user) => {
     setCurrentUser(user);
@@ -164,6 +200,15 @@ export default function App() {
     }, 800);
   };
 
+  const handleListProduct = (newProduct) => {
+    setProductList(prev => [newProduct, ...prev]);
+    setActiveCategory(newProduct.category);
+    setSearchTerm('');
+    setTimeout(() => {
+      document.querySelector('.products-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   // Toggle Wishlist handler
   const handleToggleWishlist = (productId) => {
     setWishlist((prevWishlist) => {
@@ -187,6 +232,7 @@ export default function App() {
     <div className="app-container">
       {/* 1. Header (Dynamic search + cart count badge) */}
       <Header 
+        products={productList}
         cartCount={cartCount} 
         searchTerm={searchTerm} 
         setSearchTerm={setSearchTerm}
@@ -197,6 +243,10 @@ export default function App() {
         onSignOut={handleSignOut}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenAccount={handleOpenAccount}
+        onOpenCustomerService={() => setIsCustomerServiceOpen(true)}
+        onOpenRegistry={() => setIsRegistryOpen(true)}
+        onOpenGiftCards={() => setIsGiftCardsOpen(true)}
+        onOpenSell={() => setIsSellOpen(true)}
       />
 
       {/* Main Sections */}
@@ -209,6 +259,7 @@ export default function App() {
 
         {/* 4. Product Listing Grid (Minimum 6 products + filtering search/categories) */}
         <ProductListing 
+          products={productList}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           activeCategory={activeCategory}
@@ -303,6 +354,33 @@ export default function App() {
           <span>{toast.message}</span>
         </div>
       )}
+
+      <CustomerServiceModal
+        isOpen={isCustomerServiceOpen}
+        onClose={() => setIsCustomerServiceOpen(false)}
+      />
+
+      <RegistryModal
+        isOpen={isRegistryOpen}
+        onClose={() => setIsRegistryOpen(false)}
+        triggerToast={triggerToast}
+      />
+
+      <GiftCardsModal
+        isOpen={isGiftCardsOpen}
+        onClose={() => setIsGiftCardsOpen(false)}
+        walletBalance={walletBalance}
+        setWalletBalance={setWalletBalance}
+        triggerToast={triggerToast}
+        currentUser={currentUser}
+      />
+
+      <SellModal
+        isOpen={isSellOpen}
+        onClose={() => setIsSellOpen(false)}
+        onListProduct={handleListProduct}
+        triggerToast={triggerToast}
+      />
     </div>
   );
 }
