@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Search, ShoppingCart, MapPin, Menu, ChevronDown } from 'lucide-react';
-import { products } from '../mockData';
+import { products as staticProducts } from '../mockData';
 
 const MAX_SUGGESTIONS = 5;
 
 export default function Header({
+  products = staticProducts,
   cartCount,
   searchTerm,
   setSearchTerm,
@@ -14,7 +15,11 @@ export default function Header({
   currentUser,
   onSignOut,
   onOpenAuth,
-  onOpenAccount
+  onOpenAccount,
+  onOpenCustomerService,
+  onOpenRegistry,
+  onOpenGiftCards,
+  onOpenSell
 }) {
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -304,11 +309,11 @@ export default function Header({
         <div className={`subnav-link ${activeCategory === 'grocery' ? 'bold' : ''}`} onClick={() => setActiveCategory('grocery')}>Grocery</div>
         <div className={`subnav-link ${activeCategory === 'beauty' ? 'bold' : ''}`} onClick={() => setActiveCategory('beauty')}>Beauty</div>
         <div className={`subnav-link ${activeCategory === 'sports' ? 'bold' : ''}`} onClick={() => setActiveCategory('sports')}>Sports</div>
-        <div className="subnav-link hide-mobile">Today's Deals</div>
-        <div className="subnav-link hide-mobile">Customer Service</div>
-        <div className="subnav-link hide-mobile">Registry</div>
-        <div className="subnav-link hide-mobile">Gift Cards</div>
-        <div className="subnav-link hide-mobile">Sell</div>
+        <div className={`subnav-link hide-mobile ${activeCategory === 'deals' ? 'bold' : ''}`} onClick={() => { setActiveCategory('deals'); setSearchTerm(''); setTimeout(() => scrollToProducts(), 50); }} style={{ cursor: 'pointer' }}>Today's Deals</div>
+        <div className="subnav-link hide-mobile" onClick={onOpenCustomerService} style={{ cursor: 'pointer' }}>Customer Service</div>
+        <div className="subnav-link hide-mobile" onClick={onOpenRegistry} style={{ cursor: 'pointer' }}>Registry</div>
+        <div className="subnav-link hide-mobile" onClick={onOpenGiftCards} style={{ cursor: 'pointer' }}>Gift Cards</div>
+        <div className="subnav-link hide-mobile" onClick={onOpenSell} style={{ cursor: 'pointer' }}>Sell</div>
       </div>
     </header>
   );
