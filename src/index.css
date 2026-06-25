@@ -3365,7 +3365,7 @@ input, button, select {
 }
 
 /* Registry Modal style overrides */
-.registry-tabs, .gc-layout, .registry-body-content {
+.gc-layout, .registry-body-content {
   flex: 1;
   display: flex;
   flex-direction: column;
