@@ -1,12 +1,15 @@
 import ProductCard from './ProductCard';
-import { products } from '../mockData';
 import { Search } from 'lucide-react';
 
-export default function ProductListing({ searchTerm, setSearchTerm, activeCategory, setActiveCategory, onAddToCart, onToggleWishlist, wishlist, onOpenDetail }) {
+export default function ProductListing({ products, searchTerm, setSearchTerm, activeCategory, setActiveCategory, onAddToCart, onToggleWishlist, wishlist, onOpenDetail }) {
   // Filter products by search term and selected category
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === 'all' || product.category === activeCategory;
+    const matchesCategory = activeCategory === 'all' 
+      ? true 
+      : activeCategory === 'deals'
+        ? (product.discount && product.discount >= 25)
+        : product.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -19,7 +22,11 @@ export default function ProductListing({ searchTerm, setSearchTerm, activeCatego
     <section className="products-wrapper">
       <div className="products-header-bar">
         <h2 className="section-title">
-          {activeCategory === 'all' ? 'Recommended Products' : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Specials`}
+          {activeCategory === 'all' 
+            ? 'Recommended Products' 
+            : activeCategory === 'deals'
+              ? "Today's Hot Deals"
+              : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Specials`}
         </h2>
         <div className="products-filter-info">
           Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
